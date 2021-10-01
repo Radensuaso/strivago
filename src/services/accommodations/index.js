@@ -19,7 +19,10 @@ accommodationsRouter
   })
   .post(tokenMiddleware, hostMiddleware, async (req, res, next) => {
     try {
-      const newAccommodation = new AccommodationModel(req.body);
+      const newAccommodation = new AccommodationModel({
+        ...req.body,
+        host: req.user._id,
+      });
       const accommodation = await newAccommodation.save();
       res.send(accommodation);
     } catch (error) {
