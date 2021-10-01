@@ -50,3 +50,4 @@ accommodationRouter.route('/:accId')
         next(error)
     }
 })
+export default accommodationRouter
