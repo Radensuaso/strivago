@@ -11,6 +11,7 @@ import {
 } from "./errorHandlers.js";
 import mongoose from "mongoose";
 import usersRouter from "./services/users/index.js";
+import accommodationRouter from "./services/accommodations/index.js";
 
 const server = express(); //our server function initialized with express()
 const port = process.env.PORT || 3001; // this will be the port on with the server will run
@@ -21,7 +22,7 @@ server.use(express.json()); // this will enable reading of the bodies of request
 
 // ========== ROUTES =======================
 server.use("/users", usersRouter);
-
+server.use('/accommodations',accommodationRouter)
 // ============== ERROR HANDLING ==============
 
 server.use(badRequestHandler);
