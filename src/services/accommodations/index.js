@@ -52,10 +52,10 @@ accommodationsRouter
   .delete(async (req, res, next) => {
     try {
       const AccId = req.params.accId;
-      const deleteAccommodation = await AccommodationModel.findByIdAndDelete(
+      const deletedAccommodation = await AccommodationModel.findByIdAndDelete(
         AccId
       );
-      res.send("accommodation deleted ");
+      res.send(deletedAccommodation);
     } catch (error) {
       next(error);
     }
