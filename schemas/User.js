@@ -9,6 +9,8 @@ const userSchema = new Schema({
   role: { type: String, required: true, enum: ["guest, host"] },
   password: { type: String },
   googleId: { type: String },
+},{
+    timestamps:true
 });
 
 //  ======== Hashing passwords
