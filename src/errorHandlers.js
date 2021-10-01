@@ -10,7 +10,7 @@ export const badRequestHandler = (err, req, res, next) => {
 export const unauthorizedHandler = (err, req, res, next) => {
   if (err.status === 401) {
     console.log(err);
-    res.status(401).send(err.message || "You are not logged in!");
+    res.status(401).send(err.message);
   } else {
     next(err);
   }

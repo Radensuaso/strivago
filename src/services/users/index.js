@@ -1,12 +1,16 @@
 import express from "express";
 import createHttpError from "http-errors";
 import UserModel from "../../../schemas/User.js";
+import AccommodationModel from "../../../schemas/Accommodation.js";
+import { hostMiddleware } from "../../auth/hostMiddleware.js";
+import { tokenMiddleware } from "../../auth/tokenMiddleware.js";
+import { generateJWTToken } from "../../auth/tokenTools.js";
 
 const usersRouter = express.Router();
 
 // =================== Get all users ====================
 
-usersRouter.get("/", async (req, res, next) => {
+usersRouter.get("/", tokenMiddleware, async (req, res, next) => {
   try {
     const users = await UserModel.find();
     res.send(users);
@@ -29,13 +33,22 @@ usersRouter.post("/register", async (req, res, next) => {
 // =================== Login me ====================
 usersRouter.post("/login", async (req, res, next) => {
   try {
+    const { email, password } = req.body;
+
+    const user = await UserModel.checkCredentials(email, password);
+    if (user) {
+      const accessToken = await generateJWTToken(user);
+      res.send(accessToken);
+    } else {
+      next(createHttpError(401, "credentials not correct."));
+    }
   } catch (error) {
     next(error);
   }
 });
 
 // =================== Get me ====================
-usersRouter.get("/me", async (req, res, next) => {
+usersRouter.get("/me", tokenMiddleware, async (req, res, next) => {
   try {
     res.send(req.user);
   } catch (error) {
@@ -43,8 +56,26 @@ usersRouter.get("/me", async (req, res, next) => {
   }
 });
 
+// ================ My accommodations ================
+usersRouter.get(
+  "/me/accommodations",
+  tokenMiddleware,
+  hostMiddleware,
+  async (req, res, next) => {
+    try {
+      const hostId = req.user._id;
+      const myAccommodations = await AccommodationModel.find({
+        host: hostId,
+      }).populate("host");
+      res.send(myAccommodations);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 // =================== Update me ====================
-usersRouter.put("/me", async (req, res, next) => {
+usersRouter.put("/me", tokenMiddleware, async (req, res, next) => {
   try {
     const updatedMe = await UserModel.findByIdAndUpdate(
       req.user._id,
@@ -58,7 +89,7 @@ usersRouter.put("/me", async (req, res, next) => {
 });
 
 // =================== Delete me ====================
-usersRouter.delete("/me", async (req, res, next) => {
+usersRouter.delete("/me", tokenMiddleware, async (req, res, next) => {
   try {
     const deletedMe = await UserModel.findByIdAndDelete(req.user._id);
     res.send("You've deleted your account!");

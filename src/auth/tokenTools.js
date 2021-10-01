@@ -1,10 +1,10 @@
 import JWT from "jsonwebtoken";
 
 //============== Generate JWT Token
-const generateJWT = (user) =>
+const generateJWT = (userId) =>
   new Promise((resolve, reject) =>
     JWT.sign(
-      user._id,
+      userId,
       process.env.JWT_SECRET,
       { expiresIn: "7 days" },
       (err, token) => {
