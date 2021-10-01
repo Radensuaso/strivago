@@ -23,3 +23,30 @@ accommodationRouter.route('/')
     }
 })
 
+accommodationRouter.route('/:accId')
+.get(async(req,res,next)=>{
+    try {
+        const oneAccommodation = await AccommodationModel.findById(req.params.accId)
+        res.send(oneAccommodation)
+    } catch (error) {
+        next(error)
+    }
+})
+.put(async(req,res,next)=>{
+    try {
+        const AccId = req.params.accId
+        const updateAccommodation = await AccommodationModel.findByIdAndUpdate(AccId,req.body,{new:true})
+        res.send(updateAccommodation)
+    } catch (error) {
+        next(error)
+    }
+})
+.delete(async(req,res,next)=>{
+    try {
+        const AccId = req.params.accId
+        const deleteAccommodation = await AccommodationModel.findByIdAndDelete(AccId)
+        res.send('accommodation deleted ')
+    } catch (error) {
+        next(error)
+    }
+})
