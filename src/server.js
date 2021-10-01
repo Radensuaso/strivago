@@ -10,6 +10,7 @@ import {
   genericServerErrorHandler,
 } from "./errorHandlers.js";
 import mongoose from "mongoose";
+import usersRouter from "./services/users/index.js";
 
 const server = express(); //our server function initialized with express()
 const port = process.env.PORT || 3001; // this will be the port on with the server will run
@@ -19,6 +20,7 @@ server.use(cors());
 server.use(express.json()); // this will enable reading of the bodies of requests, THIS HAS TO BE BEFORE server.use("/authors", authorsRouter)
 
 // ========== ROUTES =======================
+server.use("/users", usersRouter);
 
 // ============== ERROR HANDLING ==============
 
