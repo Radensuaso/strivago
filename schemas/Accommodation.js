@@ -1,19 +1,20 @@
-import mongoose from 'mongoose'
+import mongoose from "mongoose";
 
-const {Schema,model} = mongoose
+const { Schema, model } = mongoose;
 
-const Accomodation = new Schema({
-    
-    name:{type:String,required:true},
-    host:{type:Schema.Types.ObjectId,required:true,ref:"user"},
-    description:{type:Text,required:true},
-    maxGuests:{type:Number,required:true},
-    city:{type:String,required:true}
-},
-{
-    timestamps:true
-})
+const accommodationSchema = new Schema(
+  {
+    name: { type: String, required: true },
+    host: { type: Schema.Types.ObjectId, required: true, ref: "user" },
+    description: { type: Text, required: true },
+    maxGuests: { type: Number, required: true },
+    city: { type: String, required: true },
+  },
+  {
+    timestamps: true,
+  }
+);
 
-const AccomodationModel =   model('Accomodation', Accomodation)
+const AccommodationModel = model("accommodation", accommodationSchema);
 
-export default AccomodationModel
+export default AccommodationModel;
