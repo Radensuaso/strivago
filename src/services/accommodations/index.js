@@ -1,13 +1,13 @@
 import express from 'express'
-import AccommodationModel from '../../../schemas/Accommodation'
-
+import AccommodationModel from '../../../schemas/Accommodation.js'
+import createHttpError from 'http-errors'
 const accommodationRouter = express.Router()
 
 
 accommodationRouter.route('/')
 .get(async(req,res,next)=>{
     try {
-        const allAccommodation = AccommodationModel.find().populate('user')
+        const allAccommodation = await AccommodationModel.find().populate('host')
         res.send(allAccommodation)
     } catch (error) {
         next(error)
@@ -16,7 +16,7 @@ accommodationRouter.route('/')
 .post(async(req,res,next)=>{
     try {
         const newAccommodation = new AccommodationModel(req.body)
-        const accommodation = newAccommodation.save()
+        const accommodation = await newAccommodation.save()
         res.send(accommodation)
     } catch (error) {
         next(error)
