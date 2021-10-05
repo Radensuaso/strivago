@@ -11,7 +11,7 @@ accommodationsRouter
   .route("/")
   .get(tokenMiddleware, async (req, res, next) => {
     try {
-      const allAccommodation = await AccommodationModel.find().populate("host");
+      const allAccommodation = await AccommodationModel.find()
       res.send(allAccommodation);
     } catch (error) {
       next(error);

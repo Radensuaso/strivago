@@ -1,30 +1,30 @@
 import GoogleStrategy from 'passport-google-oauth20'
 import passport from 'passport'
-import authorModel from '../services/authors/schema.js'
-import { jwtAuth } from './tools.js'
+import UserModel from '../../schemas/User.js'
+import { generateJWTToken } from './tokenTools.js'
 
 const googleStrategy = new GoogleStrategy({
     clientID:process.env.GOOGLE_OAUTH_ID,
     clientSecret:process.env.GOOGLE_OAUTH_SECRET,
-    callbackURL: `${process.env.API_URL}:${process.env.PORT}/authors/googleRedirect`,
+    callbackURL: `${process.env.API_URL}:${process.env.PORT}/users/googleRedirect`,
 },
 async (accessToken,refreshToken,profile,passportNext)=>{
     try {
-        const author = await authorModel.findOne({googleId:profile.id})
-        if(author){
-            const tokens = await jwtAuth(author)
+        const user = await UserModel.findOne({googleId:profile.id})
+        if(user){
+            const tokens = await generateJWTToken(user)
             passportNext(null, { tokens })
         }else{
-            const newAuthor = {
+            const newUser = {
                 name: profile.name.givenName,
                 surname: profile.name.familyName,
                 email: profile.emails[0].value,
                 googleId: profile.id,
               }
-              const createAuthor = new authorModel(newAuthor)
-              const saveAuthor = await createAuthor.save()
-              const tokens = await jwtAuth(saveAuthor)
-              passportNext(null, { author: saveAuthor, tokens })
+              const createUser = new UserModel(newUser)
+              const saveUser = await createUser.save()
+              const tokens = await generateJWTToken(saveUser)
+              passportNext(null, { user: saveUser, tokens })
         }
     } catch (error) {
         console.log(error)

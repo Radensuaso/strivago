@@ -5,8 +5,26 @@ import AccommodationModel from "../../../schemas/Accommodation.js";
 import { hostMiddleware } from "../../auth/hostMiddleware.js";
 import { tokenMiddleware } from "../../auth/tokenMiddleware.js";
 import { generateJWTToken } from "../../auth/tokenTools.js";
+import passport from 'passport'
+
 
 const usersRouter = express.Router();
+
+usersRouter.route('/googleLogin')
+.get(passport.authenticate('google',{scope:['profile','email']}))
+
+usersRouter.route('/googleRedirect')
+.get(passport.authenticate('google'),async(req,res,next)=>{
+    try {
+       console.log(req.user)
+        res.cookie("accessToken",req.user.tokens)
+        res.redirect(`http://localhost:3000/Home/`)
+        // res.redirect(`http://localhost:3001/Home?accessToken=${req.user.tokens.accessToken}&refreshToken=${req.user.tokens.refreshToken}`) 
+  
+    } catch (error) {
+        console.log(error)
+    }
+})
 
 // =================== Get all users ====================
 

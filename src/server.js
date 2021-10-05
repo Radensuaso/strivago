@@ -12,14 +12,20 @@ import {
 import mongoose from "mongoose";
 import usersRouter from "./services/users/index.js";
 import accommodationsRouter from "./services/accommodations/index.js";
+import googleStrategy from "./auth/oauth.js";
+import passport from 'passport'
+import cookieParser from "cookie-parser";
 
 const server = express(); //our server function initialized with express()
 const port = process.env.PORT || 3001; // this will be the port on with the server will run
+passport.use('google',googleStrategy)
 
 //=========== GLOBAL MIDDLEWARES ======================
-server.use(cors());
-server.use(express.json()); // this will enable reading of the bodies of requests, THIS HAS TO BE BEFORE server.use("/authors", authorsRouter)
 
+server.use(cors({origin:'http://localhost:3000',credentials:true}));
+server.use(express.json()); // this will enable reading of the bodies of requests, THIS HAS TO BE BEFORE server.use("/authors", authorsRouter)
+server.use(cookieParser())
+server.use(passport.initialize())
 // ========== ROUTES =======================
 server.use("/users", usersRouter);
 server.use("/accommodations", accommodationsRouter);
