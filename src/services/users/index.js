@@ -5,8 +5,43 @@ import AccommodationModel from "../../../schemas/Accommodation.js";
 import { hostMiddleware } from "../../auth/hostMiddleware.js";
 import { tokenMiddleware } from "../../auth/tokenMiddleware.js";
 import { generateJWTToken } from "../../auth/tokenTools.js";
+import passport from 'passport'
+
 
 const usersRouter = express.Router();
+
+usersRouter.route('/googleLogin')
+.get(passport.authenticate('google',{scope:['profile','email']}))
+
+usersRouter.route('/googleRedirect')
+.get(passport.authenticate('google'),async(req,res,next)=>{
+    try {
+       console.log(req.user)
+        res.cookie("accessToken",req.user.tokens)
+        res.redirect(`http://localhost:3000/Home/`)
+        // res.redirect(`http://localhost:3001/Home?accessToken=${req.user.tokens.accessToken}&refreshToken=${req.user.tokens.refreshToken}`) 
+  
+    } catch (error) {
+        console.log(error)
+    }
+})
+
+
+usersRouter.get(
+  "/auth/facebook",
+  passport.authenticate("facebook", { scope: ["email"] })
+); 
+
+usersRouter.get(
+  "/auth/facebook/secrets",
+  passport.authenticate("facebook"),
+  async (req, res, next) => {
+    try {
+      res.redirect(`http://localhost:3000/Home`);
+    } catch (error) {
+      next(error);
+    }
+  }
 
 // =================== Get all users ====================
 
@@ -38,7 +73,7 @@ usersRouter.post("/login", async (req, res, next) => {
     const user = await UserModel.checkCredentials(email, password);
     if (user) {
       const accessToken = await generateJWTToken(user);
-      res.send(accessToken);
+      res.send({ accessToken });
     } else {
       next(createHttpError(401, "credentials not correct."));
     }
@@ -98,24 +133,16 @@ usersRouter.delete("/me", tokenMiddleware, async (req, res, next) => {
   }
 });
 
-//    // ================== Google Login =================
-//    usersRouter.get(
-//     "/googleLogin",
-//     passport.authenticate("google", { scope: ["profile", "email"] })
-//   );
-
-//   // ================= Google redirect ===============
-//   usersRouter.get(
-//     "/googleRedirect",
-//     passport.authenticate("google"),
-//     async (req, res, next) => {
-//       try {
-//         console.log("REQ.USER", req.user);
-//         res.redirect(`${process.env.FE_PROD_URL}?accessToken=${req.user.token}`);
-//       } catch (error) {
-//         next(error);
-//       }
-//     }
-//   );
-
 export default usersRouter;
+
+
+
+
+
+
+
+
+
+
+
+
