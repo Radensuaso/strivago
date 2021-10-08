@@ -26,6 +26,23 @@ usersRouter.route('/googleRedirect')
     }
 })
 
+
+usersRouter.get(
+  "/auth/facebook",
+  passport.authenticate("facebook", { scope: ["email"] })
+); 
+
+usersRouter.get(
+  "/auth/facebook/secrets",
+  passport.authenticate("facebook"),
+  async (req, res, next) => {
+    try {
+      res.redirect(`http://localhost:3000/Home`);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 // =================== Get all users ====================
 
 usersRouter.get("/", tokenMiddleware, async (req, res, next) => {
@@ -116,24 +133,16 @@ usersRouter.delete("/me", tokenMiddleware, async (req, res, next) => {
   }
 });
 
-//    // ================== Google Login =================
-//    usersRouter.get(
-//     "/googleLogin",
-//     passport.authenticate("google", { scope: ["profile", "email"] })
-//   );
-
-//   // ================= Google redirect ===============
-//   usersRouter.get(
-//     "/googleRedirect",
-//     passport.authenticate("google"),
-//     async (req, res, next) => {
-//       try {
-//         console.log("REQ.USER", req.user);
-//         res.redirect(`${process.env.FE_PROD_URL}?accessToken=${req.user.token}`);
-//       } catch (error) {
-//         next(error);
-//       }
-//     }
-//   );
-
 export default usersRouter;
+
+
+
+
+
+
+
+
+
+
+
+
